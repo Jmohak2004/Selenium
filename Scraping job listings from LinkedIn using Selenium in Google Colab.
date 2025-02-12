@@ -1,0 +1,42 @@
+!pip install selenium webdriver-manager
+!apt-get update
+!apt-get install -y chromium-chromedriver
+!cp /usr/lib/chromium-browser/chromedriver /usr/bin
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
+
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+
+service = Service("/usr/bin/chromedriver")
+driver = webdriver.Chrome(service=service, options=options)
+
+driver.get("https://www.linkedin.com/login")
+time.sleep(3)
+
+username = driver.find_element(By.ID, "username")
+password = driver.find_element(By.ID, "password")
+
+username.send_keys("your_email@example.com")
+password.send_keys("your_password")
+
+driver.find_element(By.XPATH, "//button[@type='submit']").click()
+time.sleep(5)
+
+driver.get("https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer")
+time.sleep(5)
+
+jobs = driver.find_elements(By.CLASS_NAME, "job-card-container")
+for job in jobs[:5]:
+    title = job.find_element(By.CLASS_NAME, "job-card-list__title").text
+    company = job.find_element(By.CLASS_NAME, "job-card-container__company-name").text
+    print(f"Job Title: {title}, Company: {company}")
+
+driver.quit()
